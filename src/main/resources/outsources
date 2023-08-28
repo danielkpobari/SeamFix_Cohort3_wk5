@@ -1,0 +1,57 @@
+class CsvBookReader {
+    private String csvFilePath;
+
+    public CsvBookReader(String csvFilePath) {
+        this.csvFilePath = csvFilePath;
+    }
+
+    public List<Book> readBooks() {
+        List<Book> books = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(csvFilePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data.length == 2) {
+                    String title = data[0].trim();
+                    String author = data[1].trim();
+                    books.add(new BookImpl(title, author));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return books;
+    }
+}
+
+// Main Application
+
+public class LibraryApp {
+    public static void main(String[] args) {
+        CsvBookReader csvBookReader = new CsvBookReader("books.csv");
+        List<Book> booksFromCsv = csvBookReader.readBooks();
+
+        Library library = new LibraryImpl();
+        for (Book book : booksFromCsv) {
+            library.addBook(book);
+        }
+
+        User user = new UserImpl("Alice");
+        Book bookToBorrow = booksFromCsv.get(0);
+        user.borrowBook(bookToBorrow);
+        user.addFavorite(bookToBorrow);
+    }
+}
+SOLID Principles:
+
+Single Responsibility Principle (SRP): Each class should have only one reason to change.
+
+Open/Closed Principle (OCP): Software entities (classes, modules, functions) should be open for extension but closed for modification.
+
+Liskov Substitution Principle (LSP): Subtypes must be substitutable for their base types without altering the correctness of the program.
+
+Interface Segregation Principle (ISP): Clients should not be forced to depend on interfaces they do not use.
+
+Dependency Inversion Principle (DIP): High-level modules should not depend on low-level modules; both should depend on abstractions. Abstractions should not depend on details; details should depend on abstractions.
